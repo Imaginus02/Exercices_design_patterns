@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class FileLogger {
+public class FileLogger implements WebRequestObserver{
     String filePath;
 
     public FileLogger(String filePath) {
@@ -27,6 +27,11 @@ public class FileLogger {
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void update(WebRequest request) {
+        log("Request logged: "+ request.toString());
     }
 }
 

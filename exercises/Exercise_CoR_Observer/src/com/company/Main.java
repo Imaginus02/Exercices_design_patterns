@@ -13,10 +13,10 @@ package com.company;
  *  When a non authorized user wants to access the content, the webserver must respond with the message :
  *  "Status 403 : user is not authorized to access this content"
  *
- *  When we try to access content that do not exist, the server must respons with the message :
+ *  When we try to access content that do not exist, the server must respond with the message :
  *  "Status 404 : Page missing".
  *
- *  Otherwise the server respond with the asked content which is :
+ *  Otherwise, the server respond with the asked content which is :
  *  "/dashboard" => "Status 200 : Dashboard content here"
  *  "/home" => "Status 200 : Home content here"
  *
@@ -59,11 +59,21 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) {
-        WebServer webServer = new WebServer();
-        FileLogger fileLogger = new FileLogger('logs.txt');
+
+        FileLogger fileLogger = new FileLogger("logs.txt");
 
         User regularUser = new User(false);
         User adminUser = new User(true);
+
+        AbstractRequestHandler h1 = new ExistingContentCheckRequestHandler();
+        AbstractRequestHandler h2 = new PolicyCheckRequestHandler();
+        AbstractRequestHandler h3 = new RenderContentHandler();
+
+        h1.setSuccessor(h2);
+        h2.setSuccessor(h3);
+
+        WebServer webServer = new WebServer(h1);
+        webServer.attach(fileLogger);
 
         /**
          * Expected output :
@@ -81,7 +91,7 @@ public class Main {
          * Expected output :
          * Status 200 : Dashboard content here
          */
-        webServer.getRequest(new WebRequest(("/dashboard", adminUser));
+        webServer.getRequest(new WebRequest(("/dashboard"), adminUser));
 
         /**
          * Expected output :
