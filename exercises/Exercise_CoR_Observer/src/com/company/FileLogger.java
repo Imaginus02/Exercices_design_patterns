@@ -31,7 +31,11 @@ public class FileLogger implements WebRequestObserver{
 
     @Override
     public void update(WebRequest request) {
-        log("Request logged: "+ request.toString());
+        if (request.getLoggedUser().isAdmin()) {
+            log("Request made to " + request.getPath() + " by admin user");
+        } else {
+            log("Request made to " + request.getPath() + " by non admin user");
+        }
     }
 }
 
